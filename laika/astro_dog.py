@@ -311,57 +311,57 @@ class AstroDog(object):
     else:
       return None
 
-def get_frequency(self, prn, time, signal='C1C'):
-  if get_constellation(prn) == 'GPS':
-    switch = {'1': constants.GPS_L1,
-              '2': constants.GPS_L2,
-              '5': constants.GPS_L3,
-              '6': constants.GALILEO_E6,
-              '7': constants.GALILEO_E5B,
-              '8': constants.GALILEO_E5AB}
-    if signal[1] in switch:
-      return switch[signal[1]]
-    else:
-      raise NotImplementedError("Dont know this GPS frequency: ", signal, prn)
-  elif get_constellation(prn) == 'GLONASS':
-    n = self.get_glonass_channel(prn, time)
-    if n is None:
-      return None
-    switch = {'1': constants.GLONASS_L1 + n * constants.GLONASS_L1_DELTA,
-              '2': constants.GLONASS_L2 + n * constants.GLONASS_L2_DELTA,
-              '5': constants.GLONASS_L5 + n * constants.GLONASS_L5_DELTA,
-              '6': constants.GALILEO_E6,
-              '7': constants.GALILEO_E5B,
-              '8': constants.GALILEO_E5AB}
-    if signal[1] in switch:
-      return switch[signal[1]]
-    else:
-      raise NotImplementedError("Dont know this GLONASS frequency: ", signal, prn)
+  def get_frequency(self, prn, time, signal='C1C'):
+    if get_constellation(prn) == 'GPS':
+      switch = {'1': constants.GPS_L1,
+                '2': constants.GPS_L2,
+                '5': constants.GPS_L3,
+                '6': constants.GALILEO_E6,
+                '7': constants.GALILEO_E5B,
+                '8': constants.GALILEO_E5AB}
+      if signal[1] in switch:
+        return switch[signal[1]]
+      else:
+        raise NotImplementedError("Dont know this GPS frequency: ", signal, prn)
+    elif get_constellation(prn) == 'GLONASS':
+      n = self.get_glonass_channel(prn, time)
+      if n is None:
+        return None
+      switch = {'1': constants.GLONASS_L1 + n * constants.GLONASS_L1_DELTA,
+                '2': constants.GLONASS_L2 + n * constants.GLONASS_L2_DELTA,
+                '5': constants.GLONASS_L5 + n * constants.GLONASS_L5_DELTA,
+                '6': constants.GALILEO_E6,
+                '7': constants.GALILEO_E5B,
+                '8': constants.GALILEO_E5AB}
+      if signal[1] in switch:
+        return switch[signal[1]]
+      else:
+        raise NotImplementedError("Dont know this GLONASS frequency: ", signal, prn)
 
-def get_delay(self, prn, time, rcv_pos, no_dgps=False, signal='C1C', freq=None):
-  sat_info = self.get_sat_info(prn, time)
-  if sat_info is None:
-    return None
-  sat_pos = sat_info[0]
-  el, az = get_el_az(rcv_pos, sat_pos)
-  if el < 0.2:
-    return None
-  if self.dgps and not no_dgps:
-    dgps_corrections = self.get_dgps_corrections(time, rcv_pos)
-    if dgps_corrections is None:
+  def get_delay(self, prn, time, rcv_pos, no_dgps=False, signal='C1C', freq=None):
+    sat_info = self.get_sat_info(prn, time)
+    if sat_info is None:
       return None
-    dgps_delay = dgps_corrections.get_delay(prn, time)
-    if dgps_delay is None:
+    sat_pos = sat_info[0]
+    el, az = get_el_az(rcv_pos, sat_pos)
+    if el < 0.2:
       return None
-    return dgps_corrections.get_delay(prn, time)
-  else:
-    if not freq:
-      freq = self.get_frequency(prn, time, signal)
-    ionex = self.get_ionex(time)
-    dcb = self.get_dcb(prn, time)
-    if ionex is None or dcb is None or freq is None:
-      return None
-    iono_delay = ionex.get_delay(rcv_pos, az, el, sat_pos, time, freq)
-    trop_delay = saast(rcv_pos, el)
-    code_bias = dcb.get_delay(signal)
-    return iono_delay + trop_delay + code_bias
+    if self.dgps and not no_dgps:
+      dgps_corrections = self.get_dgps_corrections(time, rcv_pos)
+      if dgps_corrections is None:
+        return None
+      dgps_delay = dgps_corrections.get_delay(prn, time)
+      if dgps_delay is None:
+        return None
+      return dgps_corrections.get_delay(prn, time)
+    else:
+      if not freq:
+        freq = self.get_frequency(prn, time, signal)
+      ionex = self.get_ionex(time)
+      dcb = self.get_dcb(prn, time)
+      if ionex is None or dcb is None or freq is None:
+        return None
+      iono_delay = ionex.get_delay(rcv_pos, az, el, sat_pos, time, freq)
+      trop_delay = saast(rcv_pos, el)
+      code_bias = dcb.get_delay(signal)
+      return iono_delay + trop_delay + code_bias
