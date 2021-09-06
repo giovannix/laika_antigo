@@ -338,30 +338,30 @@ def get_frequency(self, prn, time, signal='C1C'):
     else:
       raise NotImplementedError("Dont know this GLONASS frequency: ", signal, prn)
 
-  def get_delay(self, prn, time, rcv_pos, no_dgps=False, signal='C1C', freq=None):
-    sat_info = self.get_sat_info(prn, time)
-    if sat_info is None:
+def get_delay(self, prn, time, rcv_pos, no_dgps=False, signal='C1C', freq=None):
+  sat_info = self.get_sat_info(prn, time)
+  if sat_info is None:
+    return None
+  sat_pos = sat_info[0]
+  el, az = get_el_az(rcv_pos, sat_pos)
+  if el < 0.2:
+    return None
+  if self.dgps and not no_dgps:
+    dgps_corrections = self.get_dgps_corrections(time, rcv_pos)
+    if dgps_corrections is None:
       return None
-    sat_pos = sat_info[0]
-    el, az = get_el_az(rcv_pos, sat_pos)
-    if el < 0.2:
+    dgps_delay = dgps_corrections.get_delay(prn, time)
+    if dgps_delay is None:
       return None
-    if self.dgps and not no_dgps:
-      dgps_corrections = self.get_dgps_corrections(time, rcv_pos)
-      if dgps_corrections is None:
-        return None
-      dgps_delay = dgps_corrections.get_delay(prn, time)
-      if dgps_delay is None:
-        return None
-      return dgps_corrections.get_delay(prn, time)
-    else:
-      if not freq:
-        freq = self.get_frequency(prn, time, signal)
-      ionex = self.get_ionex(time)
-      dcb = self.get_dcb(prn, time)
-      if ionex is None or dcb is None or freq is None:
-        return None
-      iono_delay = ionex.get_delay(rcv_pos, az, el, sat_pos, time, freq)
-      trop_delay = saast(rcv_pos, el)
-      code_bias = dcb.get_delay(signal)
-      return iono_delay + trop_delay + code_bias
+    return dgps_corrections.get_delay(prn, time)
+  else:
+    if not freq:
+      freq = self.get_frequency(prn, time, signal)
+    ionex = self.get_ionex(time)
+    dcb = self.get_dcb(prn, time)
+    if ionex is None or dcb is None or freq is None:
+      return None
+    iono_delay = ionex.get_delay(rcv_pos, az, el, sat_pos, time, freq)
+    trop_delay = saast(rcv_pos, el)
+    code_bias = dcb.get_delay(signal)
+    return iono_delay + trop_delay + code_bias
