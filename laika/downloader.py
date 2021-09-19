@@ -203,8 +203,11 @@ def download_nav(time, cache_dir, constellation='GPS'):
   t = time.as_datetime()
   try:
     if GPSTime.from_datetime(datetime.utcnow()) - time > SECS_IN_DAY:
+#      url_bases = (
+#        'https://github.com/commaai/gnss-data/raw/master/gnss/data/daily/',
+#        'https://cddis.nasa.gov/archive/gnss/data/daily/',
+#      )
       url_bases = (
-        'https://github.com/commaai/gnss-data/raw/master/gnss/data/daily/',
         'https://cddis.nasa.gov/archive/gnss/data/daily/',
       )
       cache_subdir = cache_dir + 'daily_nav/'
@@ -230,8 +233,12 @@ def download_nav(time, cache_dir, constellation='GPS'):
 
 def download_orbits(time, cache_dir):
   cache_subdir = cache_dir + 'cddis_products/'
+#  url_bases = (
+#    'https://github.com/commaai/gnss-data/raw/master/gnss/products/',
+#    'https://cddis.nasa.gov/archive/gnss/products/',
+#    'ftp://igs.ign.fr/pub/igs/products/',
+#  )
   url_bases = (
-    'https://github.com/commaai/gnss-data/raw/master/gnss/products/',
     'https://cddis.nasa.gov/archive/gnss/products/',
     'ftp://igs.ign.fr/pub/igs/products/',
   )
@@ -313,8 +320,13 @@ def download_orbits_russia(time, cache_dir):
 def download_ionex(time, cache_dir):
   cache_subdir = cache_dir + 'ionex/'
   t = time.as_datetime()
+  #url_bases = (
+  #  'https://github.com/commaai/gnss-data/raw/master/gnss/products/ionex/',
+  #  'https://cddis.nasa.gov/archive/gnss/products/ionex/',
+  #  'ftp://igs.ensg.ign.fr/pub/igs/products/ionosphere/',
+  #  'ftp://gssc.esa.int/gnss/products/ionex/',
+  #)
   url_bases = (
-    'https://github.com/commaai/gnss-data/raw/master/gnss/products/ionex/',
     'https://cddis.nasa.gov/archive/gnss/products/ionex/',
     'ftp://igs.ensg.ign.fr/pub/igs/products/ionosphere/',
     'ftp://gssc.esa.int/gnss/products/ionex/',
@@ -335,8 +347,12 @@ def download_dcb(time, cache_dir):
   for time in [time - i*SECS_IN_DAY for i in range(14)]:
     try:
       t = time.as_datetime()
+#      url_bases = (
+#        'https://github.com/commaai/gnss-data/raw/master/gnss/products/bias/',
+#        'https://cddis.nasa.gov/archive/gnss/products/bias/',
+#        'ftp://igs.ign.fr/pub/igs/products/mgex/dcb/',
+#      )
       url_bases = (
-        'https://github.com/commaai/gnss-data/raw/master/gnss/products/bias/',
         'https://cddis.nasa.gov/archive/gnss/products/bias/',
         'ftp://igs.ign.fr/pub/igs/products/mgex/dcb/',
       )
