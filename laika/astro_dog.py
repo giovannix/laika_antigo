@@ -147,19 +147,26 @@ class AstroDog(object):
     return valid_orbits
 
   def get_dcb(self, prn, time):
+    print("[get_dcb] Entering get_dcb...")
+    print("[get_dcb] self.cached_dcb[prn]: ", self.cached_dcb[prn]) 
+    print("[get_dcb] self.cached_dcb[prn].valid(time): ", self.cached_dcb[prn].valid(time)) 
     if self.cached_dcb[prn] is not None and self.cached_dcb[prn].valid(time):
       return self.cached_dcb[prn]
 
     self.cached_dcb[prn] = get_closest(time, self.dcbs[prn])
+    print("[get_dcb] self.cached_dcb[prn]: ", self.cached_dcb[prn]) 
     if self.cached_dcb[prn] is not None and self.cached_dcb[prn].valid(time):
       return self.cached_dcb[prn]
 
     # Already fetched, but no data found
+    print("[get_dcb] time in self.dcbs_fetched_times: ", time in self.dcbs_fetched_times)     
     if time in self.dcbs_fetched_times:
       return None
 
     self.get_dcb_data(time)
     self.cached_dcb[prn] = get_closest(time, self.dcbs[prn])
+    print("[get_dcb] self.cached_dcb[prn]: ", self.cached_dcb[prn]) 
+    print("[get_dcb] self.cached_dcb[prn].valid(time): ", self.cached_dcb[prn].valid(time)) 
     if self.cached_dcb[prn] is not None and self.cached_dcb[prn].valid(time):
       return self.cached_dcb[prn]
     else:
@@ -239,8 +246,10 @@ class AstroDog(object):
       self.orbit_fetched_times.add(min_epoch, max_epoch)
 
   def get_dcb_data(self, time):
+    print("[get_dcb_data] Entering get_dcb_data...");
     file_path_dcb = download_dcb(time, cache_dir=self.cache_dir)
     dcbs = parse_dcbs(file_path_dcb, self.valid_const)
+    print("[get_dcb_data] dcbs: ", dcbs)
     for dcb in dcbs:
       self.dcbs[dcb.prn].append(dcb)
 
