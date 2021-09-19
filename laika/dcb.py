@@ -60,6 +60,7 @@ def parse_dcbs(file_name, SUPPORTED_CONSTELLATIONS):
   data_started = False
   dcbs_dict = {}
   for line in contents:
+    print("[dcb.parse_dcbs] line: ", line)
     if not data_started:
       if line[1:4] == 'DSB':
         data_started = True
@@ -73,6 +74,8 @@ def parse_dcbs(file_name, SUPPORTED_CONSTELLATIONS):
       continue
     dcb_type = line_components[3] + '_' + line_components[4]
     epoch = GPSTime.from_datetime(datetime.strptime(line_components[5], '%Y:%j:%f')) + 12*SECS_IN_HR
+    print("[dcb.parse_dcbs] dcb_type: ", dcb_type)
+    print("[dcb.parse_dcbs] epoch: ", epoch)
     if prn not in dcbs_dict:
       dcbs_dict[prn] = {}
     dcbs_dict[prn][dcb_type] = float(line_components[8])
@@ -80,5 +83,6 @@ def parse_dcbs(file_name, SUPPORTED_CONSTELLATIONS):
 
   dcbs = []
   for prn in dcbs_dict:
+    print("[dcb.parse_dcbs] prn: ", prn)
     dcbs.append(DCB(prn, dcbs_dict[prn]))
   return dcbs
