@@ -149,7 +149,6 @@ class AstroDog(object):
   def get_dcb(self, prn, time):
     print("[get_dcb] Entering get_dcb...")
     print("[get_dcb] self.cached_dcb[prn]: ", self.cached_dcb[prn]) 
-    print("[get_dcb] self.cached_dcb[prn].valid(time): ", self.cached_dcb[prn].valid(time)) 
     if self.cached_dcb[prn] is not None and self.cached_dcb[prn].valid(time):
       return self.cached_dcb[prn]
 
@@ -166,7 +165,6 @@ class AstroDog(object):
     self.get_dcb_data(time)
     self.cached_dcb[prn] = get_closest(time, self.dcbs[prn])
     print("[get_dcb] self.cached_dcb[prn]: ", self.cached_dcb[prn]) 
-    print("[get_dcb] self.cached_dcb[prn].valid(time): ", self.cached_dcb[prn].valid(time)) 
     if self.cached_dcb[prn] is not None and self.cached_dcb[prn].valid(time):
       return self.cached_dcb[prn]
     else:
