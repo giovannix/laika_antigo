@@ -364,4 +364,5 @@ class AstroDog(object):
       iono_delay = ionex.get_delay(rcv_pos, az, el, sat_pos, time, freq)
       trop_delay = saast(rcv_pos, el)
       code_bias = dcb.get_delay(signal)
+	    print("iono_delay, trop_delay, code_bias: ", iono_delay, trop_delay, code_bias)
       return iono_delay + trop_delay + code_bias
